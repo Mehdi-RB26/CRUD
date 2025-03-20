@@ -1,4 +1,4 @@
-const express = require("express");
+/*const express = require("express");
 const router = express.Router();
 const Car = require("../models/car");
 
@@ -36,6 +36,40 @@ router.delete("/:id", async (req, res) => {
     res.json({ message: "Car deleted" });
   } catch (error) {
     res.status(400).json({ error: error.message });
+  }
+});
+
+module.exports = router;*/
+const express = require('express');
+const router = express.Router();
+const Car = require('../models/Car');
+
+// Get all cars
+router.get('/', async (req, res) => {
+  try {
+    const cars = await Car.find();
+    res.json(cars);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Add a new car
+router.post('/', async (req, res) => {
+  const car = new Car({
+    brand: req.body.brand,
+    model: req.body.model,
+    year: req.body.year,
+    engine: req.body.engine,
+    price: req.body.price,
+    power: req.body.power
+  });
+
+  try {
+    const newCar = await car.save();
+    res.status(201).json(newCar);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
   }
 });
 
