@@ -7,7 +7,8 @@ import axios from 'axios';
 function App() {
   const [cars, setCars] = useState([]);
   const [showForm, setShowForm] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(""); // New state for search query
+  const [searchQuery, setSearchQuery] = useState("");
+  const [editingCar, setEditingCar] = useState(null);  // State to handle car update modal
 
   const fetchCars = () => {
     axios.get('http://localhost:5000/api/cars')
@@ -27,13 +28,38 @@ function App() {
     setShowForm(!showForm);
   };
 
-  // Filter cars based on the search query
+  const handleDelete = (carId) => {
+    axios.delete(`http://localhost:5000/api/cars/${carId}`)
+      .then(() => {
+        fetchCars(); // Refresh car list after deletion
+      })
+      .catch((error) => {
+        console.error('Error deleting car:', error);
+      });
+  };
+
+  const handleUpdate = (car) => {
+    setEditingCar(car); // Set the car to be edited
+    setShowForm(true);   // Show the add/update form
+  };
+
+  const handleEditSubmit = (updatedCar) => {
+    axios.put(`http://localhost:5000/api/cars/${updatedCar._id}`, updatedCar)
+      .then(() => {
+        fetchCars(); // Refresh the car list after update
+        setShowForm(false); // Close the modal after updating
+      })
+      .catch((error) => {
+        console.error('Error updating car:', error);
+      });
+  };
+
   const filteredCars = cars.filter(car => {
-    const brand = car.brand?.toLowerCase() || ''; // Safely access car.brand
-    const model = car.model?.toLowerCase() || ''; // Safely access car.model
+    const brand = car.brand?.toLowerCase() || '';
+    const model = car.model?.toLowerCase() || '';
     return (
-      brand.includes(searchQuery.toLowerCase()) || // Search for brand
-      model.includes(searchQuery.toLowerCase()) // Search for model
+      brand.includes(searchQuery.toLowerCase()) || 
+      model.includes(searchQuery.toLowerCase())
     );
   });
 
@@ -47,20 +73,26 @@ function App() {
           type="text"
           placeholder="Search Car by Model or Brand"
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}  // Update the search query state
+          onChange={(e) => setSearchQuery(e.target.value)}
         />
       </div>
-      
+
       {/* Add Car Button */}
       <button className="add-car-btn" onClick={toggleForm}>
         {showForm ? "Cancel" : "Add Car"}
       </button>
 
-      {/* Modal for Add Car Form */}
+      {/* Modal for Add/Update Car Form */}
       {showForm && (
         <div className="modal" style={{ display: 'flex' }}>
           <div className="modal-content">
-            <AddCar onAddCar={fetchCars} />
+            {/* Pass editingCar if it's an update */}
+            <AddCar 
+              onAddCar={fetchCars} 
+              toggleForm={toggleForm} 
+              carToEdit={editingCar} 
+              onEditSubmit={handleEditSubmit} 
+            />
             <div className="modal-footer">
               <button className="close-modal-btn" onClick={toggleForm}>Close</button>
             </div>
@@ -69,7 +101,7 @@ function App() {
       )}
 
       {/* Car List */}
-      <CarList cars={filteredCars} /> {/* Display filtered cars */}
+      <CarList cars={filteredCars} onDelete={handleDelete} onUpdate={handleUpdate} />
     </div>
   );
 }

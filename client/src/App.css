@@ -151,6 +151,45 @@ button:hover {
   font-size: 14px;
   margin: 5px 0;
 }
+/* Add this to your App.css or relevant CSS file */
+
+/* Style the button container inside the car card */
+.car-card-buttons {
+  display: flex;
+  gap: 10px; /* Space between buttons */
+  justify-content: center;
+  margin-top: 10px;
+}
+
+/* Style for the buttons */
+.car-card-buttons button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* Red style for delete button */
+.car-card-buttons .delete-btn {
+  background-color: #f44336; /* Red color */
+  color: white;
+}
+
+.car-card-buttons .delete-btn:hover {
+  background-color: #d32f2f; /* Darker red */
+}
+
+/* Green style for update button */
+.car-card-buttons .update-btn {
+  background-color: #4CAF50; /* Green color */
+  color: white;
+}
+
+.car-card-buttons .update-btn:hover {
+  background-color: #45a049; /* Darker green */
+}
+
 /* AddCar form button style */
 .add-car-form {
   background: #f9f9f9;
